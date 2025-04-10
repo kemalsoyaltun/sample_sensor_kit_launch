@@ -11,19 +11,19 @@
 
     <group>
       <push-ros-namespace namespace="top"/>
-      <include file="$(find-pkg-share common_sensor_launch)/launch/robosense_Helios.launch.xml">
+      <include file="$(find-pkg-share common_sensor_launch)/launch/sick_safetscanners.launch.xml">
         <arg name="vehicle_mirror_param_file" value="$(var vehicle_mirror_param_file)"/>
         <arg name="container_name" value="pointcloud_container"/>
       </include>
     </group>
 
-    <group>
+    <!-- <group>
       <push-ros-namespace namespace="front"/>
       <include file="$(find-pkg-share common_sensor_launch)/launch/robosense_Bpearl.launch.xml">
         <arg name="vehicle_mirror_param_file" value="$(var vehicle_mirror_param_file)"/>
         <arg name="container_name" value="pointcloud_container"/>
       </include>
-    </group>
+    </group> -->
 
     <include file="$(find-pkg-share sample_sensor_kit_launch)/launch/pointcloud_preprocessor.launch.py">
       <arg name="base_frame" value="base_link"/>

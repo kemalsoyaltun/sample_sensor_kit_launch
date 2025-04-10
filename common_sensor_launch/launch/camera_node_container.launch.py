@@ -42,7 +42,7 @@ def launch_setup(context, *args, **kwargs):
         tensorrt_yaml_param = yaml.safe_load(f)["/**"]["ros__parameters"]
 
     # camera_param_path=FindPackageShare("lucid_vision_driver").perform(context)+"/param/"+image_name+".param.yaml"
-    camera_param_path=FindPackageShare("lucid_vision_driver").perform(context)+"/param/"+"test"+".param.yaml"
+    camera_param_path=FindPackageShare("usb_cam").perform(context)+"/config/"+"params_1.yaml"
     with open(camera_param_path, "r") as f:
         camera_yaml_param = yaml.safe_load(f)["/**"]["ros__parameters"]
 
@@ -54,29 +54,59 @@ def launch_setup(context, *args, **kwargs):
         executable=LaunchConfiguration("container_executable"),
         output="screen",
         composable_node_descriptions=[
+            # ComposableNode(
+            #     package="lucid_vision_driver",
+            #     plugin="ArenaCameraNode",
+            #     name="arena_camera_node",
+            #     parameters=[{
+            #         "camera_name": camera_yaml_param['camera_name'],
+            #         "frame_id": camera_yaml_param['frame_id'],
+            #         "pixel_format": camera_yaml_param['pixel_format'],
+            #         "serial_no": camera_yaml_param['serial_no'],
+            #         "camera_info_url": camera_yaml_param['camera_info_url'],
+            #         "fps": camera_yaml_param['fps'],
+            #         "horizontal_binning": camera_yaml_param['horizontal_binning'],
+            #         "vertical_binning": camera_yaml_param['vertical_binning'],
+            #         "use_default_device_settings": camera_yaml_param['use_default_device_settings'],
+            #         "exposure_auto": camera_yaml_param['exposure_auto'],
+            #         "exposure_target": camera_yaml_param['exposure_target'],
+            #         "gain_auto": camera_yaml_param['gain_auto'],
+            #         "gain_target": camera_yaml_param['gain_target'],
+            #         "gamma_target": camera_yaml_param['gamma_target'],
+            #         "enable_compressing": camera_yaml_param['enable_compressing'],
+            #         "enable_rectifying": camera_yaml_param['enable_rectifying'],
+            #         "image_vertical_flip": camera_yaml_param['image_vertical_flip'],
+            #         "image_horizontal_flip": camera_yaml_param['image_horizontal_flip']
+            #     }],
+            #     remappings=[
+            #     ],
+            #     extra_arguments=[
+            #         {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
+            #     ],
+            # ),
             ComposableNode(
-                package="lucid_vision_driver",
-                plugin="ArenaCameraNode",
-                name="arena_camera_node",
+                package="usb_cam",
+                plugin="usb_cam::UsbCamNode",
+                name="usb_cam_node",
                 parameters=[{
                     "camera_name": camera_yaml_param['camera_name'],
                     "frame_id": camera_yaml_param['frame_id'],
                     "pixel_format": camera_yaml_param['pixel_format'],
-                    "serial_no": camera_yaml_param['serial_no'],
-                    "camera_info_url": camera_yaml_param['camera_info_url'],
-                    "fps": camera_yaml_param['fps'],
-                    "horizontal_binning": camera_yaml_param['horizontal_binning'],
-                    "vertical_binning": camera_yaml_param['vertical_binning'],
-                    "use_default_device_settings": camera_yaml_param['use_default_device_settings'],
-                    "exposure_auto": camera_yaml_param['exposure_auto'],
-                    "exposure_target": camera_yaml_param['exposure_target'],
-                    "gain_auto": camera_yaml_param['gain_auto'],
-                    "gain_target": camera_yaml_param['gain_target'],
-                    "gamma_target": camera_yaml_param['gamma_target'],
-                    "enable_compressing": camera_yaml_param['enable_compressing'],
-                    "enable_rectifying": camera_yaml_param['enable_rectifying'],
-                    "image_vertical_flip": camera_yaml_param['image_vertical_flip'],
-                    "image_horizontal_flip": camera_yaml_param['image_horizontal_flip']
+                    # "serial_no": camera_yaml_param['serial_no'],
+                    # "camera_info_url": camera_yaml_param['camera_info_url'],
+                    # "fps": camera_yaml_param['fps'],
+                    # "horizontal_binning": camera_yaml_param['horizontal_binning'],
+                    # "vertical_binning": camera_yaml_param['vertical_binning'],
+                    # "use_default_device_settings": camera_yaml_param['use_default_device_settings'],
+                    # "exposure_auto": camera_yaml_param['exposure_auto'],
+                    # "exposure_target": camera_yaml_param['exposure_target'],
+                    # "gain_auto": camera_yaml_param['gain_auto'],
+                    # "gain_target": camera_yaml_param['gain_target'],
+                    # "gamma_target": camera_yaml_param['gamma_target'],
+                    # "enable_compressing": camera_yaml_param['enable_compressing'],
+                    # "enable_rectifying": camera_yaml_param['enable_rectifying'],
+                    # "image_vertical_flip": camera_yaml_param['image_vertical_flip'],
+                    # "image_horizontal_flip": camera_yaml_param['image_horizontal_flip']
                 }],
                 remappings=[
                 ],
@@ -84,7 +114,6 @@ def launch_setup(context, *args, **kwargs):
                     {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
                 ],
             ),
-
             ComposableNode(
                 namespace='/perception/object_recognition/detection',
                 package="autoware_tensorrt_yolox",
@@ -93,9 +122,10 @@ def launch_setup(context, *args, **kwargs):
                 parameters=[
                 {
                     # Model and label paths
-                    "model_path": FindPackageShare("autoware_tensorrt_yolox").perform(context) + "/data/" + LaunchConfiguration("yolo_type").perform(context) + ".onnx",
-                    "label_path": FindPackageShare("autoware_tensorrt_yolox").perform(context) + "/data/" + LaunchConfiguration("label_file").perform(context),
-                    
+                    # "model_path": FindPackageShare("autoware_tensorrt_yolox").perform(context) + "/data/" + LaunchConfiguration("yolo_type").perform(context) + ".onnx",
+                    "model_path": "/home/leo/autoware_data/tensorrt_yolox/yolox-tiny.onnx",
+                    # "label_path": FindPackageShare("autoware_tensorrt_yolox").perform(context) + "/data/" + LaunchConfiguration("label_file").perform(context),
+                    "label_path": "/home/leo/autoware_data/tensorrt_yolox/label.txt",
                     # Color map for segmentation (if applicable)
                     "color_map_path": FindPackageShare("autoware_tensorrt_yolox").perform(context) + "/data/semseg_color_map.csv",
                     
@@ -115,11 +145,23 @@ def launch_setup(context, *args, **kwargs):
                     
                     # GPU ID and calibration image list
                     "gpu_id": 0,  # from YAML
-                    "calibration_image_list_path": ""  # from YAML (empty by default)
+                    "calibration_image_list_path": "",  # from YAML (empty by default)
+
+                    "is_roi_overlap_segment": True,
+                    "is_publish_color_mask": True,
+                    "overlap_roi_score_threshold": 0.5,
+                    "roi_overlay_segment_label.UNKNOWN": True,
+                    "roi_overlay_segment_label.CAR": True,
+                    "roi_overlay_segment_label.TRUCK": True,
+                    "roi_overlay_segment_label.BUS": True,
+                    "roi_overlay_segment_label.MOTORCYCLE": True,
+                    "roi_overlay_segment_label.BICYCLE": True,
+                    "roi_overlay_segment_label.PEDESTRIAN": True,
+                    "roi_overlay_segment_label.ANIMAL": True
                     }
                 ],
                 remappings=[
-                    ("in/image", camera_namespace + "/image_rect"),
+                    ("in/image", camera_namespace + "/camera/image_raw"),
                     ("out/objects", output_topic),
                     ("out/image", output_topic + "/debug/image"),
                 ],

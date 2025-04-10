@@ -109,45 +109,76 @@ def launch_setup(context, *args, **kwargs):
         )
     )
 
+    # nodes.append(
+    #     ComposableNode(
+    #         package="nebula_ros",
+    #         plugin=sensor_make + "RosWrapper",
+    #         name=sensor_make.lower() + "_ros_wrapper_node",
+    #         parameters=[
+    #             {
+    #                 "calibration_file": sensor_calib_fp,
+    #                 "sensor_model": sensor_model,
+    #                 "launch_hw": LaunchConfiguration("launch_driver"),
+    #                 **create_parameter_dict(
+    #                     "host_ip",
+    #                     "sensor_ip",
+    #                     "data_port",
+    #                     "gnss_port",
+    #                     "return_mode",
+    #                     "min_range",
+    #                     "max_range",
+    #                     "frame_id",
+    #                     "scan_phase",
+    #                     "cloud_min_angle",
+    #                     "cloud_max_angle",
+    #                     "dual_return_distance_threshold",
+    #                     "rotation_speed",
+    #                     "packet_mtu_size",
+    #                     "setup_sensor",
+    #                     "udp_only",
+    #                 ),
+    #             },
+    #         ],
+    #         remappings=[
+    #             # cSpell:ignore knzo25
+    #             # TODO(knzo25): fix the remapping once nebula gets updated
+    #             ("velodyne_points", "pointcloud_raw_ex"),
+    #             # ("robosense_points", "pointcloud_raw_ex"), #for robosense
+    #             # ("pandar_points", "pointcloud_raw_ex"), # for hesai
+    #         ],
+    #         extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+    #     )
+    # )
+
     nodes.append(
         ComposableNode(
-            package="nebula_ros",
-            plugin=sensor_make + "RosWrapper",
-            name=sensor_make.lower() + "_ros_wrapper_node",
-            parameters=[
-                {
-                    "calibration_file": sensor_calib_fp,
-                    "sensor_model": sensor_model,
-                    "launch_hw": LaunchConfiguration("launch_driver"),
-                    **create_parameter_dict(
-                        "host_ip",
-                        "sensor_ip",
-                        "data_port",
-                        "gnss_port",
-                        "return_mode",
-                        "min_range",
-                        "max_range",
-                        "frame_id",
-                        "scan_phase",
-                        "cloud_min_angle",
-                        "cloud_max_angle",
-                        "dual_return_distance_threshold",
-                        "rotation_speed",
-                        "packet_mtu_size",
-                        "setup_sensor",
-                        "udp_only",
-                    ),
-                },
-            ],
-            remappings=[
-                # cSpell:ignore knzo25
-                # TODO(knzo25): fix the remapping once nebula gets updated
-                ("velodyne_points", "pointcloud_raw_ex"),
-                # ("robosense_points", "pointcloud_raw_ex"), #for robosense
-                # ("pandar_points", "pointcloud_raw_ex"), # for hesai
-            ],
-            extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
-        )
+                package="sick_safetyscanners2",
+                plugin="sick::SickSafetyscannersRos2",
+                name="sick_safetyscanners2_node",
+                parameters=[
+                {"frame_id": "scan",
+                    "sensor_ip": "192.168.1.2",
+                    "host_ip": "192.168.1.1",
+                    "interface_ip": "0.0.0.0",
+                    "host_udp_port": 0,
+                    "channel": 0,
+                    "channel_enabled": True,
+                    "skip": 0,
+                    "angle_start": 0.0,
+                    "angle_end": 0.0,
+                    "time_offset": 0.0,
+                    "general_system_state": True,
+                    "derived_settings": True,
+                    "measurement_data": True,
+                    "intrusion_data": True,
+                    "application_io_data": True,
+                    "use_persistent_config": False,
+                    "min_intensities": 0.0}
+                ],
+                remappings=[
+                ("/scan", "pointcloud_raw_ex")
+            ]
+            )
     )
 
     cropbox_parameters = create_parameter_dict("input_frame", "output_frame")
